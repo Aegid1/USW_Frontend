@@ -30,7 +30,7 @@
     <form @submit.prevent="submit">
       <div class="input-group">
         <input class="form-control" placeholder="Write a message" v-model="message"/>
-        <div class="input-group-append">
+        <div class="input-group-append submit-div">
           <button class="btn btn-outline-secondary" type="submit" id="submit-icon">
             <BIconSend></BIconSend>
           </button>
@@ -40,7 +40,7 @@
   </div>
 
   <div class="credits">
-    <p>CREDITS</p>
+    <p>Ägid Haslauer, Mohamed Moussa, Jakob Scharf</p>
   </div>
 </template>
 
@@ -84,15 +84,15 @@ export default {
 
 <style>
   body {
-    background-color: #212121;
+    background-color: #241D21;
     font-family: 'Jost', sans-serif;
     margin: 0;
   }
   h1,h2,h3,h4,h5,h6,span {
-    color: aliceblue;
+    color: #E7E6E5 !important;
   }
   input {
-    background-color: #212121!important;
+    background-color: #241D21!important;
   }
   h1 {
     font-size: 30px;
@@ -121,8 +121,21 @@ export default {
     margin-top: 4rem;
   }
   .list-group-item {
-    background-color: #212121;
+    background-color: #241D21;
     color: aliceblue;
+  }
+  .btn-outline-secondary {
+    border-color: #E7E6E5;
+  }
+  .btn-outline-secondary:hover {
+    background-color: #E7E6E5 !important;
+    border-color: #E7E6E5;
+  }
+  .btn-outline-secondary:hover svg path {
+    fill: #241D21;
+  }
+  svg {
+    color: #E7E6E5;
   }
 
 
