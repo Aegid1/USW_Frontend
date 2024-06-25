@@ -10,7 +10,7 @@
           <p>Your can ask the compass everything you want regarding the following topics:</p>
           <li>1. AfD</li>
           <li>2. Umwelt</li>
-          <li>Und so halt</li>
+          <li>O.ä.</li>
           <p>The media compass has access to a vector database which contains various articles
             from within the last ten years to the above-mentioned topics. It will iterate through all the data and will
             answer your question based on the information in the database.</p>
@@ -23,6 +23,10 @@
             <small class="text-body-secondary">Tues</small>
           </div>
           <div class="col-10 mb-1 small">{{message.message}}</div>
+          <div v-if="message.graph" class="graph-container">
+            <!-- TODO: Testen & Styling -->
+            <iframe src="http://localhost:8501" width="100%" height="200"></iframe>
+          </div>
         </div>
         <div v-if="fetchRun" class="list-group-item spinnercustom"><OrbitSpinner :size="55" color="#f0f8ff" /></div>
       </div>
@@ -71,7 +75,15 @@ export default {
           body: JSON.stringify({
             message: this.message.value
           })
-        })
+        }).then(response => response.json())
+            .then(data => {
+              this.messages.push({
+                id: data.id,
+                username: data.username,
+                message: data.message,
+                graph: data.graph
+              });
+            })
       } catch(e) {
         console.log(e)
         this.fetchRun = false
