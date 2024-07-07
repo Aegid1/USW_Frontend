@@ -20,10 +20,9 @@
         >
           <div class="d-flex w-100 align-items-center justify-content-between">
             <strong class="mb-1">{{message.username}}</strong>
-            <small class="text-body-secondary">Tues</small>
           </div>
           <div class="col-10 mb-1 small">{{message.message}}</div>
-          <div v-if="message.graph" class="graph-container">
+          <div v-if="message.visualization_given" class="graph-container">
             <!-- TODO: Testen & Styling -->
             <iframe src="http://localhost:8501" width="100%" height="200"></iframe>
           </div>
@@ -62,30 +61,56 @@ export default {
     return {
       messages: [],
       message: "",
-      fetchRun: false
+      fetchRun: false,
+      thread_id: "",
+      visualization_given: false,
     }
   },
   methods: {
     async submit() {
+
+      this.messages.push({
+        id: Math.random().toString(36),
+        username: "You",
+        message: this.message,
+        visualization_given: this.visualization_given,
+      })
+
+
+      if(this.messages.length === 1){
+        this.fetchRun = true;
+        console.log("FIRST SUBMIT")
+        try {
+          const response = await fetch("http://localhost:4000/api/v1/chat", {method: "GET"})
+          const data = await response.json();
+          this.thread_id = data.id;
+          console.log("THREAD ID: ", this.thread_id);
+          this.fetchRun = false;
+        } catch(e) {
+          console.error("Error creating thread: ", e)
+        }
+      }
+
       try {
+        console.log("SENDING MESSAGE: ", this.message)
         this.fetchRun = true
-        await fetch('http://localhost:8081/api/messages', {
+
+        const response = await fetch("http://localhost:4000/api/v1/chat/" + this.thread_id, {
           method: "POST",
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            message: this.message.value
-          })
-        }).then(response => response.json())
-            .then(data => {
-              this.messages.push({
-                id: data.id,
-                username: data.username,
-                message: data.message,
-                graph: data.graph
-              });
-            })
+          body: JSON.stringify( {text: this.message})
+        });
+        const data = await response.json();
+        this.messages.push({
+          id: data.id,
+          username: "media compass",
+          message: data.text,
+          visualization_given: data.visualization_given
+        })
+        console.log("RECEIVED MESSAGE FROM ", data)
+        this.fetchRun = false
       } catch(e) {
-        console.log(e)
+        console.log("Error sending message: ", e)
         this.fetchRun = false
       }
       this.message = ''
@@ -105,6 +130,7 @@ export default {
   }
   input {
     background-color: #241D21!important;
+    color: #fff!important;
   }
   h1 {
     font-size: 30px;
