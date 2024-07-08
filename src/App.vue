@@ -1,18 +1,14 @@
 <template>
   <div class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
-    <h1 class="fs-5">media compass</h1>
+    <img src="@/assets/logo.png" height="50" />
   </div>
   <div class="container">
     <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary">
       <div class="list-group list-group-flush scrollarea">
         <div v-if="messages.length === 0" class="list-group-item" id="welcome">
           <h2>Welcome to the media compass!</h2>
-          <p>Your can ask the compass everything you want regarding the following topics:</p>
-          <li>1. AfD</li>
-          <li>2. Umwelt</li>
-          <li>O.ä.</li>
           <p>The media compass has access to a vector database which contains various articles
-            from within the last ten years to the above-mentioned topics. It will iterate through all the data and will
+            from within the last few years to the above-mentioned topics. It will iterate through all the data and will
             answer your question based on the information in the database.</p>
         </div>
         <div class="list-group-item list-group-item-action py-3 lh-sm"
@@ -121,7 +117,7 @@ export default {
 
 <style>
   body {
-    background-color: #241D21;
+    background-color: #121212;
     font-family: 'Jost', sans-serif;
     margin: 0;
   }
@@ -129,7 +125,7 @@ export default {
     color: #E7E6E5 !important;
   }
   input {
-    background-color: #241D21!important;
+    background-color: #121212!important;
     color: #fff!important;
   }
   h1 {
@@ -159,7 +155,7 @@ export default {
     margin-top: 4rem;
   }
   .list-group-item {
-    background-color: #241D21;
+    background-color: #121212;
     color: aliceblue;
   }
   .btn-outline-secondary {
@@ -170,7 +166,7 @@ export default {
     border-color: #E7E6E5;
   }
   .btn-outline-secondary:hover svg path {
-    fill: #241D21;
+    fill: #121212;
   }
   svg {
     color: #E7E6E5;
