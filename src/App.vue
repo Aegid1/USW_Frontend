@@ -20,7 +20,7 @@
           <div class="col-10 mb-1 small">{{message.message}}</div>
           <div v-if="message.visualization_given" class="graph-container">
             <!-- TODO: Testen & Styling -->
-            <iframe src="http://localhost:8501" width="100%" height="200"></iframe>
+            <iframe src="http://localhost:8501" width="100%" height="400"></iframe>
           </div>
         </div>
         <div v-if="fetchRun" class="list-group-item spinnercustom"><OrbitSpinner :size="55" color="#f0f8ff" /></div>
@@ -77,7 +77,7 @@ export default {
         this.fetchRun = true;
         console.log("FIRST SUBMIT")
         try {
-          const response = await fetch("http://localhost:4000/api/v1/chat", {method: "GET"})
+          const response = await fetch("http://localhost:4000/api/v1/chat", {method: "POST"})
           const data = await response.json();
           this.thread_id = data.id;
           console.log("THREAD ID: ", this.thread_id);
