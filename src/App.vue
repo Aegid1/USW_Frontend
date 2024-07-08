@@ -8,29 +8,31 @@
         <div v-if="messages.length === 0" class="list-group-item" id="welcome">
           <h2>Welcome to the media compass!</h2>
           <p>Your can ask the compass everything you want regarding the following topics:</p>
-          <li>Topic 1</li>
-          <li>Topic 2</li>
-          <li>Topic 3</li>
+          <li>1. AfD</li>
+          <li>2. Umwelt</li>
+          <li>O.ä.</li>
           <p>The media compass has access to a vector database which contains various articles
             from within the last ten years to the above-mentioned topics. It will iterate through all the data and will
             answer your question based on the information in the database.</p>
         </div>
-        <div
-          v-for="message in messages"
-          :key="message.id"
-          :class="['list-group-item', 'list-group-item-action', 'py-3', 'lh-sm']"
+        <div class="list-group-item list-group-item-action py-3 lh-sm"
+          v-for="message in messages" :key="message.id"
         >
           <div class="d-flex w-100 align-items-center justify-content-between">
-            <strong class="mb-1">{{message.user}}</strong>
+            <strong class="mb-1">{{message.username}}</strong>
           </div>
-          <div class="col-10 mb-1 small w-100">{{message.message}}</div>
+          <div class="col-10 mb-1 small">{{message.message}}</div>
+          <div v-if="message.visualization_given" class="graph-container">
+            <!-- TODO: Testen & Styling -->
+            <iframe src="http://localhost:8501" width="100%" height="200"></iframe>
+          </div>
         </div>
         <div v-if="fetchRun" class="list-group-item spinnercustom"><OrbitSpinner :size="55" color="#f0f8ff" /></div>
       </div>
     </div>
     <form @submit.prevent="submit">
       <div class="input-group">
-        <input class="form-control" placeholder="Write a message" id="message-input"/>
+        <input class="form-control" placeholder="Write a message" v-model="message"/>
         <div class="input-group-append submit-div">
           <button class="btn btn-outline-secondary" type="submit" id="submit-icon">
             <BIconSend></BIconSend>
@@ -59,32 +61,59 @@ export default {
     return {
       messages: [],
       message: "",
-      fetchRun: false
+      fetchRun: false,
+      thread_id: "",
+      visualization_given: false,
     }
   },
   methods: {
     async submit() {
+
+      this.messages.push({
+        id: Math.random().toString(36),
+        username: "You",
+        message: this.message,
+        visualization_given: this.visualization_given,
+      })
+
+
+      if(this.messages.length === 1){
+        this.fetchRun = true;
+        console.log("FIRST SUBMIT")
+        try {
+          const response = await fetch("http://localhost:4000/api/v1/chat", {method: "GET"})
+          const data = await response.json();
+          this.thread_id = data.id;
+          console.log("THREAD ID: ", this.thread_id);
+          this.fetchRun = false;
+        } catch(e) {
+          console.error("Error creating thread: ", e)
+        }
+      }
+
       try {
-        this.message = document.getElementById("message-input").value
-        this.messages.push({ user: "You", message: this.message})
+        console.log("SENDING MESSAGE: ", this.message)
         this.fetchRun = true
-        await fetch('http://localhost:8081/api/messages', {
+
+        const response = await fetch("http://localhost:4000/api/v1/chat/" + this.thread_id, {
           method: "POST",
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            message: this.message
-          })
-        }).then(response => {
-          console.log(response)
-          this.message = response.text()
-          this.messages.push({ user: "media compass", message: this.message})
-          this.fetchRun = false
+          body: JSON.stringify( {text: this.message})
+        });
+        const data = await response.json();
+        this.messages.push({
+          id: data.id,
+          username: "media compass",
+          message: data.text,
+          visualization_given: data.visualization_given
         })
-      } catch(e) {
-        console.log(e)
+        console.log("RECEIVED MESSAGE FROM ", data)
         this.fetchRun = false
-        this.message = ''
+      } catch(e) {
+        console.log("Error sending message: ", e)
+        this.fetchRun = false
       }
+      this.message = ''
     }
   },
 }
@@ -101,6 +130,7 @@ export default {
   }
   input {
     background-color: #241D21!important;
+    color: #fff!important;
   }
   h1 {
     font-size: 30px;
@@ -144,12 +174,6 @@ export default {
   }
   svg {
     color: #E7E6E5;
-  }
-  .text-right {
-    text-align: right;
-  }
-  .text-left {
-    text-align: left;
   }
 
 
